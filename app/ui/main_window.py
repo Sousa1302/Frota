@@ -75,8 +75,8 @@ class MainWindow(QMainWindow):
         layout.addLayout(bar2)
 
         # Tabela
-        self.table = QTableWidget(0, 5)
-        self.table.setHorizontalHeaderLabels(["#", "Tipo", "Marca", "Preço (€)", "Bateria (kWh)"])
+        self.table = QTableWidget(0, 7)
+        self.table.setHorizontalHeaderLabels(["#", "Tipo", "Marca", "Modelo", "Ano", "Preço (€)", "Bateria (kWh)"])
         self.table.horizontalHeader().setStretchLastSection(True)
         self.table.setSelectionBehavior(self.table.SelectionBehavior.SelectRows)
         self.table.setEditTriggers(self.table.EditTrigger.NoEditTriggers)
@@ -119,9 +119,13 @@ class MainWindow(QMainWindow):
                 QTableWidgetItem(str(idx)),
                 QTableWidgetItem(tipo),
                 QTableWidgetItem(v.marca),
+                QTableWidgetItem(v.modelo),
+                QTableWidgetItem(str(v.ano)),
                 QTableWidgetItem(f"{v.preco:.2f}"),
                 QTableWidgetItem(bateria),
             ]
+
+
 
             for col, it in enumerate(items):
                 it.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -132,9 +136,11 @@ class MainWindow(QMainWindow):
         if dlg.exec() == dlg.DialogCode.Accepted and dlg.data:
             d = dlg.data
             if d["tipo"] == "CarroEletrico":
-                v = CarroEletrico(d["marca"], d["preco"], d["bateria_kwh"])
+                v = CarroEletrico(d["marca"], d["modelo"], d["ano"], d["preco"], d["bateria_kwh"])
             else:
-                v = Veiculo(d["marca"], d["preco"])
+                v = Veiculo(d["marca"], d["modelo"], d["ano"], d["preco"])
+
+
 
             self.frota.adicionar_veiculo(v)
             self.filtered_indices = None

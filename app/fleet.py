@@ -47,7 +47,7 @@ class Frota:
     def exportar_csv(self, path: str) -> None:
         with open(path, "w", newline="", encoding="utf-8") as f:
             writer = csv.writer(f)
-            writer.writerow(["tipo", "marca", "preco", "bateria_kwh"])
+            writer.writerow(["tipo", "marca", "modelo", "ano", "preco", "bateria_kwh"])
             for v in self.veiculos:
                 writer.writerow(v.to_row())
 

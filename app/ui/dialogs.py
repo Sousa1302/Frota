@@ -1,6 +1,6 @@
 from PyQt6.QtWidgets import (
     QDialog, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit,
-    QPushButton, QComboBox, QDoubleSpinBox, QMessageBox
+    QPushButton, QComboBox, QDoubleSpinBox, QMessageBox, QSpinBox
 )
 
 class AddVehicleDialog(QDialog):
@@ -8,13 +8,15 @@ class AddVehicleDialog(QDialog):
     Devolve um dict com:
     - tipo: "Veiculo" ou "CarroEletrico"
     - marca: str
+    - modelo: str
+    - ano: int
     - preco: float
     - bateria_kwh: float (se elétrico)
     """
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Adicionar Veículo")
-        self.resize(360, 180)
+        self.resize(420, 250)
 
         layout = QVBoxLayout(self)
 
@@ -34,6 +36,23 @@ class AddVehicleDialog(QDialog):
         self.txt_marca.setPlaceholderText("Ex: Toyota")
         row_marca.addWidget(self.txt_marca)
         layout.addLayout(row_marca)
+
+        # modelo
+        row_modelo = QHBoxLayout()
+        row_modelo.addWidget(QLabel("Modelo:"))
+        self.txt_modelo = QLineEdit()
+        self.txt_modelo.setPlaceholderText("Ex: Yaris")
+        row_modelo.addWidget(self.txt_modelo)
+        layout.addLayout(row_modelo)
+
+        # ano ✅
+        row_ano = QHBoxLayout()
+        row_ano.addWidget(QLabel("Ano:"))
+        self.spn_ano = QSpinBox()
+        self.spn_ano.setRange(1886, 2100)  # 1886 = 1º carro (histórico), 2100 para margem
+        self.spn_ano.setValue(2015)
+        row_ano.addWidget(self.spn_ano)
+        layout.addLayout(row_ano)
 
         # preco
         row_preco = QHBoxLayout()
@@ -76,17 +95,25 @@ class AddVehicleDialog(QDialog):
 
     def _on_ok(self):
         marca = self.txt_marca.text().strip()
+        modelo = self.txt_modelo.text().strip()
+
         if not marca:
             QMessageBox.warning(self, "Erro", "A marca não pode estar vazia.")
             return
+        if not modelo:
+            QMessageBox.warning(self, "Erro", "O modelo não pode estar vazio.")
+            return
 
         tipo = self.cmb_tipo.currentText()
+        ano = int(self.spn_ano.value())
         preco = float(self.spn_preco.value())
         bateria = float(self.spn_bat.value())
 
         self.data = {
             "tipo": tipo,
             "marca": marca,
+            "modelo": modelo,
+            "ano": ano,
             "preco": preco,
             "bateria_kwh": bateria
         }
