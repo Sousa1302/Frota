@@ -1,0 +1,339 @@
+Instruções de Atribuição do Sistema de Gestão de Frotas
+Objetivo
+
+O objetivo principal desta tarefa é desenvolver um programa que gere eficazmente uma frota de veículos. Isto inclui calcular impostos, manter um inventário e guardar esses dados num ficheiro. Ao longo deste projeto, irá aplicar técnicas avançadas de programação para criar um sistema funcional e eficiente.
+Requisitos do Projeto
+
+Para concluir com sucesso este projeto, terá de implementar vários componentes-chave. Abaixo encontram-se instruções detalhadas para cada requisito:
+1. Classes
+
+    Classe Base:
+        Criar uma classe base chamada 'Veículo'. Esta classe deve englobar atributos comuns a todos os veículos.
+        Atributos a incluir:
+            'marca': O fabricante ou marca do veículo.
+            'preço': O custo do veículo.
+        Passos de Implementação:
+            Definir o método 'init' para inicializar estes atributos.
+            Considerar adicionar um método 'str' para fornecer uma representação em cadeia do veículo.
+
+    Subclasse:
+        Desenvolver pelo menos uma subclasse que estenda a classe 'Veículo'. Pode escolher criar um 'Carro Elétrico', 'Camião' ou qualquer outro tipo de veículo que lhe interesse.
+        Atributos e Métodos Únicos:
+            Pensa no que torna esta subclasse diferente. Por exemplo, um 'Carro Elétrico' pode ter uma característica para a capacidade da bateria, enquanto um 'Camião' pode ter capacidade de carga.
+            Implementar métodos específicos desta subclasse, como calcular a autonomia de um veículo elétrico.
+
+2. Decoradores
+
+    @log_operacao Decorador:
+        Criar um decorador chamado '@log_operacao' que regista a data e hora em que um veículo é adicionado ou removido do inventário.
+        Como Implementar:
+            Defina uma função que assume outra função como argumento.
+            Dentro desta função, use o módulo 'datetime' para capturar a data e hora atuais.
+            Imprimir uma mensagem que inclua a data, hora e nome atuais da função a ser executada.
+            Finalmente, devolver o resultado da função original para garantir que esta executa como pretendido.
+
+3. Escrita para Ficheiros
+
+    Funcionalidade de Exportação de Inventário:
+        O seu programa deve incluir uma funcionalidade que permita aos utilizadores "Exportar Inventário". Esta funcionalidade deve guardar os detalhes de todos os veículos num ficheiro '.txt' ou '.csv'.
+        Passos de Implementação:
+            Criar uma função que abra um ficheiro em modo de escrita (''w'').
+            Percorra a lista de veículos e escreva os detalhes de cada veículo no ficheiro, garantindo que cada entrada está numa nova linha.
+            Depois de escrever, lembre-se de fechar o ficheiro para garantir que todos os dados estão devidamente guardados.
+
+4. Funções Lambda
+
+    Aplicação de Descontos ou Taxas:
+        Use uma função lambda para aplicar um desconto ou uma taxa adicional ao preço de todos os veículos do seu inventário.
+        Exemplo:
+            Criar uma função lambda que recolha o preço de um veículo e aplique um desconto de 10%.
+            Pode usar esta função em conjunto com uma lista de preços de veículos para atualizar os seus valores.
+
+5. Compreensão das Listas
+
+    Funcionalidade de Pesquisa:
+        Implementar uma funcionalidade de pesquisa que devolve uma lista de veículos que cumprem um critério específico, como filtrar por marca.
+        Utilizar a compreensão de listas para conseguir isto numa única linha de código.
+        Exemplo:
+            Para encontrar todos os veículos da marca "Toyota", a sua compreensão da lista deve ser a seguinte: '[v para v em self.vehicles if v.brand == "Toyota"]'.
+
+6. Interface Gráfica
+
+    Apresentação Gráfica:
+        O seu programa deve ser apresentado numa interface gráfica. Pode escolher qualquer biblioteca com que se sinta confortável, como Tkinter ou PyQt.
+        Dicas de Implementação:
+            Projetar uma interface fácil de usar que permita aos utilizadores interagir facilmente com o sistema de gestão do veículo.
+            Incluir botões para adicionar veículos, exportar inventário e procurar veículos.
+
+Exemplo de Estrutura e Explicação
+A. O Decorador de Discos (@decorator)
+
+'''python Data de importação
+Instruções de Atribuição do Sistema de Gestão de Frotas
+Objetivo
+
+O objetivo principal desta tarefa é desenvolver um programa que gere eficazmente uma frota de veículos. Isto inclui calcular impostos, manter um inventário e guardar esses dados num ficheiro. Ao longo deste projeto, irá aplicar técnicas avançadas de programação para criar um sistema funcional e eficiente.
+Requisitos do Projeto
+
+Para concluir com sucesso este projeto, terá de implementar vários componentes-chave. Abaixo encontram-se instruções detalhadas para cada requisito:
+1. Classes
+
+    Classe Base:
+        Criar uma classe base chamada 'Veículo'. Esta classe deve englobar atributos comuns a todos os veículos.
+        Atributos a incluir:
+            'marca': O fabricante ou marca do veículo.
+            'preço': O custo do veículo.
+        Passos de Implementação:
+            Definir o método 'init' para inicializar estes atributos.
+            Considerar adicionar um método 'str' para fornecer uma representação em cadeia do veículo.
+
+    Subclasse:
+        Desenvolver pelo menos uma subclasse que estenda a classe 'Veículo'. Pode escolher criar um 'Carro Elétrico', 'Camião' ou qualquer outro tipo de veículo que lhe interesse.
+        Atributos e Métodos Únicos:
+            Pensa no que torna esta subclasse diferente. Por exemplo, um 'Carro Elétrico' pode ter uma característica para a capacidade da bateria, enquanto um 'Camião' pode ter capacidade de carga.
+            Implementar métodos específicos desta subclasse, como calcular a autonomia de um veículo elétrico.
+
+2. Decoradores
+
+    @log_operacao Decorador:
+        Criar um decorador chamado '@log_operacao' que regista a data e hora em que um veículo é adicionado ou removido do inventário.
+        Como Implementar:
+            Defina uma função que assume outra função como argumento.
+            Dentro desta função, use o módulo 'datetime' para capturar a data e hora atuais.
+            Imprimir uma mensagem que inclua a data, hora e nome atuais da função a ser executada.
+            Finalmente, devolver o resultado da função original para garantir que esta executa como pretendido.
+
+3. Escrita para Ficheiros
+
+    Funcionalidade de Exportação de Inventário:
+        O seu programa deve incluir uma funcionalidade que permita aos utilizadores "Exportar Inventário". Esta funcionalidade deve guardar os detalhes de todos os veículos num ficheiro '.txt' ou '.csv'.
+        Passos de Implementação:
+            Criar uma função que abra um ficheiro em modo de escrita (''w'').
+            Percorra a lista de veículos e escreva os detalhes de cada veículo no ficheiro, garantindo que cada entrada está numa nova linha.
+            Depois de escrever, lembre-se de fechar o ficheiro para garantir que todos os dados estão devidamente guardados.
+
+4. Funções Lambda
+
+    Aplicação de Descontos ou Taxas:
+        Use uma função lambda para aplicar um desconto ou uma taxa adicional ao preço de todos os veículos do seu inventário.
+        Exemplo:
+            Criar uma função lambda que recolha o preço de um veículo e aplique um desconto de 10%.
+            Pode usar esta função em conjunto com uma lista de preços de veículos para atualizar os seus valores.
+
+5. Compreensão das Listas
+
+    Funcionalidade de Pesquisa:
+        Implementar uma funcionalidade de pesquisa que devolve uma lista de veículos que cumprem um critério específico, como filtrar por marca.
+        Utilizar a compreensão de listas para conseguir isto numa única linha de código.
+        Exemplo:
+            Para encontrar todos os veículos da marca "Toyota", a sua compreensão da lista deve ser a seguinte: '[v para v em self.vehicles if v.brand == "Toyota"]'.
+
+6. Interface Gráfica
+
+    Apresentação Gráfica:
+        O seu programa deve ser apresentado numa interface gráfica. Pode escolher qualquer biblioteca com que se sinta confortável, como Tkinter ou PyQt.
+        Dicas de Implementação:
+            Projetar uma interface fácil de usar que permita aos utilizadores interagir facilmente com o sistema de gestão do veículo.
+            Incluir botões para adicionar veículos, exportar inventário e procurar veículos.
+
+Exemplo de Estrutura e Explicação
+A. O Decorador de Discos (@decorator)
+
+'''python Data de importação
+
+def log_operacao(função): def wrapping(*args, **kwargs): agora = datatempo.datadatadata.agora() print(f"[{agora}] A executar: {function.name}") função de retorno(*args, **kwargs) Envolvimento de retorno
+B. A Lógica de Classes e Núcleo
+
+    Classe de Veículo: '''python Veículo da Classe: Definitivamente init(self, marca, preço): self.brand = marca self.price = price
+
+Def str(eu): return f"{self.brand} - {self.price}€"
+
+    Classe Frota: '''python Classe Frota: Definitivamente init (eu): auto.veículos = []
+
+@log_operacao def add_vehicle(self, v): self.vehicles.append(v)
+Exemplo de Compreensão de Listas para filtro
+Definitivamente filter_by_brand(self, brand): devolução [v por v em self.vehicles se v.brand == marca]
+Exercícios de Preparação (Temas Profissionais)
+
+Antes de iniciar o seu projeto, é essencial dominar os seguintes exercícios:
+Tema 1: Processamento com Lambda e Mapa
+
+    Exercício: Dada uma lista de preços: 'preços = [10000, 25000, 40000]'. Use a função 'map()' juntamente com um lambda para criar uma nova lista que inclua o IVA de 23% em cada montante.
+    Explicação: Este exercício vai ajudá-lo a compreender como usar funções lambda para realizar cálculos sem definir uma função formal.
+
+Tema 2: Compreender a Lista
+
+    Exercício: Dada a lista 'kms = [150, 2000, 50000, 120000, 500]', criar uma nova lista chamada 'little_usados' que contenha apenas valores inferiores a 1000, usando compreensão de lista.
+    Explicação: Isto vai ensinar-te a filtrar dados de forma eficiente em Python.
+
+Tópico 3: Persistência de Dados (Ficheiros)
+
+    Exercício: Escrever uma função que pega numa lista de objetos e guarda o nome de cada objeto numa linha diferente num ficheiro chamado 'fleet_exportada.txt'.
+    Explicação: Compreender o tratamento de ficheiros é crucial, e usar o modo ''w'' em 'open()' é essencial para criar o ficheiro se este ainda não existir.
+
+Critérios de Avaliação
+
+O seu projeto será avaliado com base nos seguintes critérios:
+
+    Classes and Inheritance (25%): Certifique-se de definir corretamente atributos e métodos nas suas classes.
+    Utilização do Decorador (20%): A aplicação correta da sintaxe do decorador e das funções aninhadas é essencial.
+    Eficiência (Lambda/Composição por Lista) (30%): Evitar ciclos desnecessários e usar eficazmente a sintaxe moderna.
+    Gestão de ficheiros (15%): Garantir que o ficheiro está corretamente fechado e que a formatação é adequada.
+    Organização do Código (10%): O seu código deve incluir comentários claros e nomes de variáveis significativos para melhorar a legibilidade.
+
+Ao seguir estas instruções detalhadas, estará bem encaminhado para completar com sucesso a tarefa do Sistema de Gestão de Frotas. Boa sorte!
+
+def log_operacao(função): def wrapping(*args, **kwargs): agora = datatempo.datadatadata.agora() print(f"[{agora}] A executar: {function.name}") função de retorno(*args, **kwargs) Envolvimento de retorno
+B. A Lógica de Classes e Núcleo
+
+    Classe de Veículo: '''python Veículo da Classe: Definitivamente init(self, marca, preço): self.brand = marca self.price = price
+
+Def str(eu): return f"{self.brand} - {self.price}€"
+
+    Classe Frota: '''python Classe Frota: Definitivamente init (eu): auto.veículos = []
+
+@log_operacao def add_vehicle(self, v): self.vehicles.append(v)
+Exemplo de Compreensão de Listas para filtro
+Definitivamente filter_by_brand(self, brand): devolução [v por v em self.vehicles se v.brand == marca]
+Exercícios de Preparação (Temas Profissionais)
+
+Antes de iniciar o seu projeto, é essencial dominar os seguintes exercícios:
+Tema 1: Processamento com Lambda e Mapa
+
+    Exercício: Dada uma lista de preços: 'preços = [10000, 25000, 40000]'. Use a função 'map()' juntamente com um lambda para criar uma nova lista que inclua o IVA de 23% em cada montante.
+    Explicação: Este exercício vai ajudá-lo a compreender como usar funções lambda para realizar cálculos sem definir uma função formal.
+
+Tema 2: Compreender a Lista
+
+    Exercício: Dada a lista 'kms = [150, 2000, 50000, 120000, 500]', criar uma nova lista chamada 'little_usados' que contenha apenas valores inferiores a 1000, usando compreensão de lista.
+    Explicação: Isto vai ensinar-te a filtrar dados de forma eficiente em Python.
+
+Tópico 3: Persistência de Dados (Ficheiros)
+
+    Exercício: Escrever uma função que pega numa lista de objetos e guarda o nome de cada objeto numa linha diferente num ficheiro chamado 'fleet_exportada.txt'.
+    Explicação: Compreender o tratamento de ficheiros é crucial, e usar o modo ''w'' em 'open()' é essencial para criar o ficheiro se este ainda não existir.
+Instruções de Atribuição do Sistema de Gestão de Frotas
+Objetivo
+
+O objetivo principal desta tarefa é desenvolver um programa que gere eficazmente uma frota de veículos. Isto inclui calcular impostos, manter um inventário e guardar esses dados num ficheiro. Ao longo deste projeto, irá aplicar técnicas avançadas de programação para criar um sistema funcional e eficiente.
+Requisitos do Projeto
+
+Para concluir com sucesso este projeto, terá de implementar vários componentes-chave. Abaixo encontram-se instruções detalhadas para cada requisito:
+1. Classes
+
+    Classe Base:
+        Criar uma classe base chamada 'Veículo'. Esta classe deve englobar atributos comuns a todos os veículos.
+        Atributos a incluir:
+            'marca': O fabricante ou marca do veículo.
+            'preço': O custo do veículo.
+        Passos de Implementação:
+            Definir o método 'init' para inicializar estes atributos.
+            Considerar adicionar um método 'str' para fornecer uma representação em cadeia do veículo.
+
+    Subclasse:
+        Desenvolver pelo menos uma subclasse que estenda a classe 'Veículo'. Pode escolher criar um 'Carro Elétrico', 'Camião' ou qualquer outro tipo de veículo que lhe interesse.
+        Atributos e Métodos Únicos:
+            Pensa no que torna esta subclasse diferente. Por exemplo, um 'Carro Elétrico' pode ter uma característica para a capacidade da bateria, enquanto um 'Camião' pode ter capacidade de carga.
+            Implementar métodos específicos desta subclasse, como calcular a autonomia de um veículo elétrico.
+
+2. Decoradores
+
+    @log_operacao Decorador:
+        Criar um decorador chamado '@log_operacao' que regista a data e hora em que um veículo é adicionado ou removido do inventário.
+        Como Implementar:
+            Defina uma função que assume outra função como argumento.
+            Dentro desta função, use o módulo 'datetime' para capturar a data e hora atuais.
+            Imprimir uma mensagem que inclua a data, hora e nome atuais da função a ser executada.
+            Finalmente, devolver o resultado da função original para garantir que esta executa como pretendido.
+
+3. Escrita para Ficheiros
+
+    Funcionalidade de Exportação de Inventário:
+        O seu programa deve incluir uma funcionalidade que permita aos utilizadores "Exportar Inventário". Esta funcionalidade deve guardar os detalhes de todos os veículos num ficheiro '.txt' ou '.csv'.
+        Passos de Implementação:
+            Criar uma função que abra um ficheiro em modo de escrita (''w'').
+            Percorra a lista de veículos e escreva os detalhes de cada veículo no ficheiro, garantindo que cada entrada está numa nova linha.
+            Depois de escrever, lembre-se de fechar o ficheiro para garantir que todos os dados estão devidamente guardados.
+
+4. Funções Lambda
+
+    Aplicação de Descontos ou Taxas:
+        Use uma função lambda para aplicar um desconto ou uma taxa adicional ao preço de todos os veículos do seu inventário.
+        Exemplo:
+            Criar uma função lambda que recolha o preço de um veículo e aplique um desconto de 10%.
+            Pode usar esta função em conjunto com uma lista de preços de veículos para atualizar os seus valores.
+
+5. Compreensão das Listas
+
+    Funcionalidade de Pesquisa:
+        Implementar uma funcionalidade de pesquisa que devolve uma lista de veículos que cumprem um critério específico, como filtrar por marca.
+        Utilizar a compreensão de listas para conseguir isto numa única linha de código.
+        Exemplo:
+            Para encontrar todos os veículos da marca "Toyota", a sua compreensão da lista deve ser a seguinte: '[v para v em self.vehicles if v.brand == "Toyota"]'.
+
+6. Interface Gráfica
+
+    Apresentação Gráfica:
+        O seu programa deve ser apresentado numa interface gráfica. Pode escolher qualquer biblioteca com que se sinta confortável, como Tkinter ou PyQt.
+        Dicas de Implementação:
+            Projetar uma interface fácil de usar que permita aos utilizadores interagir facilmente com o sistema de gestão do veículo.
+            Incluir botões para adicionar veículos, exportar inventário e procurar veículos.
+
+Exemplo de Estrutura e Explicação
+A. O Decorador de Discos (@decorator)
+
+'''python Data de importação
+
+def log_operacao(função): def wrapping(*args, **kwargs): agora = datatempo.datadatadata.agora() print(f"[{agora}] A executar: {function.name}") função de retorno(*args, **kwargs) Envolvimento de retorno
+B. A Lógica de Classes e Núcleo
+
+    Classe de Veículo: '''python Veículo da Classe: Definitivamente init(self, marca, preço): self.brand = marca self.price = price
+
+Def str(eu): return f"{self.brand} - {self.price}€"
+
+    Classe Frota: '''python Classe Frota: Definitivamente init (eu): auto.veículos = []
+
+@log_operacao def add_vehicle(self, v): self.vehicles.append(v)
+Exemplo de Compreensão de Listas para filtro
+Definitivamente filter_by_brand(self, brand): devolução [v por v em self.vehicles se v.brand == marca]
+Exercícios de Preparação (Temas Profissionais)
+
+Antes de iniciar o seu projeto, é essencial dominar os seguintes exercícios:
+Tema 1: Processamento com Lambda e Mapa
+
+    Exercício: Dada uma lista de preços: 'preços = [10000, 25000, 40000]'. Use a função 'map()' juntamente com um lambda para criar uma nova lista que inclua o IVA de 23% em cada montante.
+    Explicação: Este exercício vai ajudá-lo a compreender como usar funções lambda para realizar cálculos sem definir uma função formal.
+
+Tema 2: Compreender a Lista
+
+    Exercício: Dada a lista 'kms = [150, 2000, 50000, 120000, 500]', criar uma nova lista chamada 'little_usados' que contenha apenas valores inferiores a 1000, usando compreensão de lista.
+    Explicação: Isto vai ensinar-te a filtrar dados de forma eficiente em Python.
+
+Tópico 3: Persistência de Dados (Ficheiros)
+
+    Exercício: Escrever uma função que pega numa lista de objetos e guarda o nome de cada objeto numa linha diferente num ficheiro chamado 'fleet_exportada.txt'.
+    Explicação: Compreender o tratamento de ficheiros é crucial, e usar o modo ''w'' em 'open()' é essencial para criar o ficheiro se este ainda não existir.
+
+Critérios de Avaliação
+
+O seu projeto será avaliado com base nos seguintes critérios:
+
+    Classes and Inheritance (25%): Certifique-se de definir corretamente atributos e métodos nas suas classes.
+    Utilização do Decorador (20%): A aplicação correta da sintaxe do decorador e das funções aninhadas é essencial.
+    Eficiência (Lambda/Composição por Lista) (30%): Evitar ciclos desnecessários e usar eficazmente a sintaxe moderna.
+    Gestão de ficheiros (15%): Garantir que o ficheiro está corretamente fechado e que a formatação é adequada.
+    Organização do Código (10%): O seu código deve incluir comentários claros e nomes de variáveis significativos para melhorar a legibilidade.
+
+Ao seguir estas instruções detalhadas, estará bem encaminhado para completar com sucesso a tarefa do Sistema de Gestão de Frotas. Boa sorte!
+
+Critérios de Avaliação
+
+O seu projeto será avaliado com base nos seguintes critérios:
+
+    Classes and Inheritance (25%): Certifique-se de definir corretamente atributos e métodos nas suas classes.
+    Utilização do Decorador (20%): A aplicação correta da sintaxe do decorador e das funções aninhadas é essencial.
+    Eficiência (Lambda/Composição por Lista) (30%): Evitar ciclos desnecessários e usar eficazmente a sintaxe moderna.
+    Gestão de ficheiros (15%): Garantir que o ficheiro está corretamente fechado e que a formatação é adequada.
+    Organização do Código (10%): O seu código deve incluir comentários claros e nomes de variáveis significativos para melhorar a legibilidade.
+
+Ao seguir estas instruções detalhadas, estará bem encaminhado para completar com sucesso a tarefa do Sistema de Gestão de Frotas. Boa sorte!
