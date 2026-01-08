@@ -17,6 +17,7 @@ class MainWindow(QMainWindow):
         self.resize(900, 520)
 
         self.frota = Frota()
+        self.frota.carregar_autosave()
 
         root = QWidget()
         self.setCentralWidget(root)
@@ -24,7 +25,6 @@ class MainWindow(QMainWindow):
 
         # Barra de ações
         bar = QHBoxLayout()
-
         self.btn_add = QPushButton("Adicionar")
         self.btn_remove = QPushButton("Remover Selecionado")
         self.btn_export_txt = QPushButton("Exportar TXT")
@@ -36,7 +36,6 @@ class MainWindow(QMainWindow):
         bar.addWidget(self.btn_export_csv)
 
         bar.addSpacing(16)
-
         bar.addWidget(QLabel("Pesquisar marca:"))
         self.txt_search = QLineEdit()
         self.txt_search.setPlaceholderText("Ex: Toyota")
@@ -49,7 +48,7 @@ class MainWindow(QMainWindow):
 
         layout.addLayout(bar)
 
-        # Barra de desconto/taxa (lambda)
+        # Barra de desconto/taxa
         bar2 = QHBoxLayout()
         bar2.addWidget(QLabel("Desconto (%):"))
         self.spn_discount = QDoubleSpinBox()
@@ -76,33 +75,63 @@ class MainWindow(QMainWindow):
 
         # Tabela
         self.table = QTableWidget(0, 7)
-        self.table.setHorizontalHeaderLabels(["#", "Tipo", "Marca", "Modelo", "Ano", "Preço (€)", "Bateria (kWh)"])
+        self.table.setHorizontalHeaderLabels(["Id", "Tipo", "Marca", "Modelo", "Ano", "Preço (€)", "Bateria (kWh)"])
         self.table.horizontalHeader().setStretchLastSection(True)
         self.table.setSelectionBehavior(self.table.SelectionBehavior.SelectRows)
+        self.table.setSelectionMode(self.table.SelectionMode.ExtendedSelection)
         self.table.setEditTriggers(self.table.EditTrigger.NoEditTriggers)
         layout.addWidget(self.table)
 
         # ligações
         self.btn_add.clicked.connect(self.on_add)
         self.btn_remove.clicked.connect(self.on_remove)
-        self.btn_export_txt.clicked.connect(self.on_export_txt)
-        self.btn_export_csv.clicked.connect(self.on_export_csv)
+        self.btn_export_txt.clicked.connect(lambda: self.on_export("txt"))
+        self.btn_export_csv.clicked.connect(lambda: self.on_export("csv"))
         self.btn_search.clicked.connect(self.on_search)
         self.btn_clear.clicked.connect(self.on_clear_filter)
-        self.btn_discount.clicked.connect(self.on_discount)
-        self.btn_tax.clicked.connect(self.on_tax)
+        self.btn_discount.clicked.connect(lambda: self._apply_percent(self.frota.aplicar_desconto_percent_indices, self.spn_discount.value()))
+        self.btn_tax.clicked.connect(lambda: self._apply_percent(self.frota.aplicar_taxa_percent_indices, self.spn_tax.value()))
 
-        # estado de filtro
-        self.filtered_indices = None  # None = sem filtro
+        self.filtered_indices = None
         self.refresh_table()
 
-    def refresh_table(self):
-        # decide lista mostrada
-        if self.filtered_indices is None:
-            indices = list(range(len(self.frota.veiculos)))
-        else:
-            indices = self.filtered_indices
+    # -------------------------
+    # Helpers
+    # -------------------------
+    def _info(self, msg: str):
+        QMessageBox.information(self, "Info", msg)
 
+    def _warn(self, msg: str):
+        QMessageBox.warning(self, "Erro", msg)
+
+    def _selected_real_indices(self):
+        selected_rows = {idx.row() for idx in self.table.selectedIndexes()}
+        out = []
+        for r in selected_rows:
+            it = self.table.item(r, 0)
+            if it:
+                try:
+                    out.append(int(it.text()))
+                except ValueError:
+                    pass
+        return sorted(set(out))
+
+    def _apply_percent(self, fn, percent: float):
+        if not self.frota.veiculos:
+            self._info("Inventário vazio.")
+            return
+        indices = self._selected_real_indices()
+        if not indices:
+            self._info("Seleciona pelo menos um veículo na tabela.")
+            return
+        fn(float(percent), indices)
+        self.refresh_table()
+
+    # -------------------------
+    # UI actions
+    # -------------------------
+    def refresh_table(self):
+        indices = list(range(len(self.frota.veiculos))) if self.filtered_indices is None else self.filtered_indices
         self.table.setRowCount(0)
 
         for row, idx in enumerate(indices):
@@ -111,7 +140,6 @@ class MainWindow(QMainWindow):
                 continue
 
             self.table.insertRow(row)
-
             tipo = "CarroEletrico" if isinstance(v, CarroEletrico) else "Veiculo"
             bateria = f"{v.bateria_kwh:.1f}" if isinstance(v, CarroEletrico) else ""
 
@@ -125,46 +153,40 @@ class MainWindow(QMainWindow):
                 QTableWidgetItem(bateria),
             ]
 
-
-
             for col, it in enumerate(items):
                 it.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
                 self.table.setItem(row, col, it)
 
     def on_add(self):
         dlg = AddVehicleDialog(self)
-        if dlg.exec() == dlg.DialogCode.Accepted and dlg.data:
-            d = dlg.data
-            if d["tipo"] == "CarroEletrico":
-                v = CarroEletrico(d["marca"], d["modelo"], d["ano"], d["preco"], d["bateria_kwh"])
-            else:
-                v = Veiculo(d["marca"], d["modelo"], d["ano"], d["preco"])
+        if dlg.exec() != dlg.DialogCode.Accepted or not dlg.data:
+            return
 
+        d = dlg.data
+        v = (
+            CarroEletrico(d["marca"], d["modelo"], d["ano"], d["preco"], d["bateria_kwh"])
+            if d["tipo"] == "CarroEletrico"
+            else Veiculo(d["marca"], d["modelo"], d["ano"], d["preco"])
+        )
 
-
+        try:
             self.frota.adicionar_veiculo(v)
-            self.filtered_indices = None
-            self.refresh_table()
+        except Exception as e:
+            self._warn(str(e))
+            return
 
-    def _selected_real_index(self):
-        row = self.table.currentRow()
-        if row < 0:
-            return None
-        idx_item = self.table.item(row, 0)
-        if not idx_item:
-            return None
-        return int(idx_item.text())
+        self.filtered_indices = None
+        self.refresh_table()
 
     def on_remove(self):
-        idx = self._selected_real_index()
-        if idx is None:
-            QMessageBox.information(self, "Info", "Seleciona uma linha para remover.")
+        idxs = self._selected_real_indices()
+        if not idxs:
+            self._info("Seleciona uma linha para remover.")
             return
 
-        ok = self.frota.remover_por_indice(idx)
-        if not ok:
-            QMessageBox.warning(self, "Erro", "Não foi possível remover (índice inválido).")
-            return
+        # remover do maior para o menor para não baralhar índices
+        for idx in sorted(idxs, reverse=True):
+            self.frota.remover_por_indice(idx)
 
         self.filtered_indices = None
         self.refresh_table()
@@ -172,56 +194,40 @@ class MainWindow(QMainWindow):
     def on_search(self):
         marca = self.txt_search.text().strip()
         if not marca:
-            QMessageBox.information(self, "Info", "Escreve uma marca para pesquisar.")
+            self._info("Escreve uma marca para pesquisar.")
             return
 
-        # usamos o método que internamente faz list comprehension
-        encontrados = self.frota.pesquisar_por_marca(marca)
-
-        # converter objetos encontrados para índices reais (para a tabela)
-        # (fazemos assim para remover/exportar continuar certo)
-        self.filtered_indices = [i for i, v in enumerate(self.frota.veiculos) if v in encontrados]
+        m = marca.lower()
+        self.filtered_indices = [i for i, v in enumerate(self.frota.veiculos) if v.marca.lower() == m]
         self.refresh_table()
-
-        QMessageBox.information(self, "Resultado", f"Foram encontrados {len(encontrados)} veículo(s).")
+        self._info(f"Foram encontrados {len(self.filtered_indices)} veículo(s).")
 
     def on_clear_filter(self):
         self.filtered_indices = None
         self.txt_search.clear()
         self.refresh_table()
 
-    def on_discount(self):
+    def on_export(self, kind: str):
         if not self.frota.veiculos:
-            QMessageBox.information(self, "Info", "Inventário vazio.")
+            self._info("Inventário vazio.")
             return
-        percent = float(self.spn_discount.value())
-        self.frota.aplicar_desconto_percent(percent)  # lambda dentro
-        self.refresh_table()
 
-    def on_tax(self):
-        if not self.frota.veiculos:
-            QMessageBox.information(self, "Info", "Inventário vazio.")
-            return
-        percent = float(self.spn_tax.value())
-        self.frota.aplicar_taxa_percent(percent)  # lambda dentro
-        self.refresh_table()
+        if kind == "txt":
+            path, _ = QFileDialog.getSaveFileName(self, "Guardar TXT", "fleet_exportada.txt", "Text (*.txt)")
+            if not path:
+                return
+            self.frota.exportar_txt(path)
+            self._info("Inventário exportado para TXT.")
+        else:
+            path, _ = QFileDialog.getSaveFileName(self, "Guardar CSV", "fleet_exportada.csv", "CSV (*.csv)")
+            if not path:
+                return
+            self.frota.exportar_csv(path)
+            self._info("Inventário exportado para CSV.")
 
-    def on_export_txt(self):
-        if not self.frota.veiculos:
-            QMessageBox.information(self, "Info", "Inventário vazio.")
-            return
-        path, _ = QFileDialog.getSaveFileName(self, "Guardar TXT", "fleet_exportada.txt", "Text (*.txt)")
-        if not path:
-            return
-        self.frota.exportar_txt(path)
-        QMessageBox.information(self, "OK", "Inventário exportado para TXT.")
-
-    def on_export_csv(self):
-        if not self.frota.veiculos:
-            QMessageBox.information(self, "Info", "Inventário vazio.")
-            return
-        path, _ = QFileDialog.getSaveFileName(self, "Guardar CSV", "fleet_exportada.csv", "CSV (*.csv)")
-        if not path:
-            return
-        self.frota.exportar_csv(path)
-        QMessageBox.information(self, "OK", "Inventário exportado para CSV.")
+    def closeEvent(self, event):
+        try:
+            self.frota.guardar_autosave()
+        except Exception:
+            pass
+        event.accept()

@@ -1,17 +1,15 @@
+from datetime import datetime
 from PyQt6.QtWidgets import (
     QDialog, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit,
     QPushButton, QComboBox, QDoubleSpinBox, QMessageBox, QSpinBox
 )
 
+
 class AddVehicleDialog(QDialog):
     """
     Devolve um dict com:
     - tipo: "Veiculo" ou "CarroEletrico"
-    - marca: str
-    - modelo: str
-    - ano: int
-    - preco: float
-    - bateria_kwh: float (se elétrico)
+    - marca, modelo, ano, preco, bateria_kwh
     """
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -45,11 +43,11 @@ class AddVehicleDialog(QDialog):
         row_modelo.addWidget(self.txt_modelo)
         layout.addLayout(row_modelo)
 
-        # ano ✅
+        # ano
         row_ano = QHBoxLayout()
         row_ano.addWidget(QLabel("Ano:"))
         self.spn_ano = QSpinBox()
-        self.spn_ano.setRange(1886, 2100)  # 1886 = 1º carro (histórico), 2100 para margem
+        self.spn_ano.setRange(1886, 2100)
         self.spn_ano.setValue(2015)
         row_ano.addWidget(self.spn_ano)
         layout.addLayout(row_ano)
@@ -85,8 +83,8 @@ class AddVehicleDialog(QDialog):
         row_btn.addWidget(self.btn_cancel)
         layout.addLayout(row_btn)
 
-        self._toggle_bateria(self.cmb_tipo.currentText())
         self.data = None
+        self._toggle_bateria(self.cmb_tipo.currentText())
 
     def _toggle_bateria(self, tipo: str):
         is_eletrico = (tipo == "CarroEletrico")
@@ -94,27 +92,47 @@ class AddVehicleDialog(QDialog):
         self.spn_bat.setEnabled(is_eletrico)
 
     def _on_ok(self):
-        marca = self.txt_marca.text().strip()
-        modelo = self.txt_modelo.text().strip()
+        try:
+            marca = self.txt_marca.text().strip()
+            modelo = self.txt_modelo.text().strip()
+            tipo = self.cmb_tipo.currentText()
+            ano = int(self.spn_ano.value())
+            preco = float(self.spn_preco.value())
+            bateria = float(self.spn_bat.value())
 
-        if not marca:
-            QMessageBox.warning(self, "Erro", "A marca não pode estar vazia.")
-            return
-        if not modelo:
-            QMessageBox.warning(self, "Erro", "O modelo não pode estar vazio.")
-            return
+            if not marca:
+                raise ValueError("A marca não pode estar vazia.")
+            if not modelo:
+                raise ValueError("O modelo não pode estar vazio.")
 
-        tipo = self.cmb_tipo.currentText()
-        ano = int(self.spn_ano.value())
-        preco = float(self.spn_preco.value())
-        bateria = float(self.spn_bat.value())
+            ano_atual = datetime.now().year
+            if not (1886 <= ano <= ano_atual + 1):
+                raise ValueError(f"Ano inválido (1886–{ano_atual + 1}).")
 
-        self.data = {
-            "tipo": tipo,
-            "marca": marca,
-            "modelo": modelo,
-            "ano": ano,
-            "preco": preco,
-            "bateria_kwh": bateria
-        }
-        self.accept()
+            if preco < 0:
+                raise ValueError("O preço não pode ser negativo.")
+
+            # normalizar -0.0 para 0.0
+            if abs(bateria) < 1e-9:
+                bateria = 0.0
+
+            # bloquear “-0” escrito (opcional, mas resolve o teu caso)
+            if tipo == "CarroEletrico":
+                txt = self.spn_bat.lineEdit().text().strip()
+                if txt.startswith("-"):
+                    raise ValueError("A bateria (kWh) não pode ser negativa (nem '-0').")
+                if bateria < 0:
+                    raise ValueError("A bateria (kWh) não pode ser negativa.")
+
+            self.data = {
+                "tipo": tipo,
+                "marca": marca,
+                "modelo": modelo,
+                "ano": ano,
+                "preco": preco,
+                "bateria_kwh": bateria
+            }
+            self.accept()
+
+        except Exception as e:
+            QMessageBox.warning(self, "Erro", str(e))

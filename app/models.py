@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 
+
 @dataclass
 class Veiculo:
     marca: str
@@ -11,7 +12,7 @@ class Veiculo:
         return f"Veiculo | {self.marca} {self.modelo} ({self.ano}) | {self.preco:.2f}€"
 
     def to_row(self) -> list:
-        """Para UI/CSV"""
+        # tipo, marca, modelo, ano, preco, bateria_kwh
         return ["Veiculo", self.marca, self.modelo, str(self.ano), f"{self.preco:.2f}", ""]
 
 
@@ -19,8 +20,8 @@ class Veiculo:
 class CarroEletrico(Veiculo):
     bateria_kwh: float = 0.0
 
-    def autonomia_km(self) -> float:
-        return self.bateria_kwh * 5.0  # exemplo simples
+    # ✅ exemplo de lambda (curta e clara)
+    autonomia_km = lambda self: self.bateria_kwh * 5.0
 
     def __str__(self) -> str:
         return (
