@@ -14,10 +14,6 @@ def _safe_float(value: str, default: float = 0.0) -> float:
 
 
 class Frota:
-    """
-    Frota com persistência automática em CSV (auto-save / auto-load)
-    """
-
     HEADER = ["tipo", "marca", "modelo", "ano", "preco", "bateria_kwh"]
 
     def __init__(self, autosave_path: str = "data/frota_autosave.csv"):
@@ -53,7 +49,6 @@ class Frota:
                     for r in reader
                 ]
         except Exception:
-            # Se o ficheiro estiver corrompido, não rebenta o programa
             self.veiculos = []
 
     def guardar_autosave(self) -> None:
@@ -63,12 +58,11 @@ class Frota:
                 writer.writerow(self.HEADER)
                 writer.writerows(v.to_row() for v in self.veiculos)
         except Exception:
-            # Não crashar a app por causa de IO
             pass
 
-    # -------------------------
-    # Validações (opção 7)
-    # -------------------------
+    # -----------
+    # Validações 
+    # -----------
     def validar_veiculo(self, v: Veiculo) -> None:
         if not v.marca or not v.marca.strip():
             raise ValueError("Marca vazia.")
@@ -79,17 +73,14 @@ class Frota:
         if not (1886 <= v.ano <= 2100):
             raise ValueError("Ano inválido (1886–2100).")
 
-        # Se for elétrico
+
         if hasattr(v, "bateria_kwh"):
-            # normalizar -0.0 -> 0.0
             if abs(v.bateria_kwh) < 1e-9:
                 v.bateria_kwh = 0.0
             if v.bateria_kwh < 0:
                 raise ValueError("Bateria (kWh) não pode ser negativa.")
 
-    # -------------------------
-    # Operações com log + autosave
-    # -------------------------
+    
     @log_operacao
     def adicionar_veiculo(self, v: Veiculo) -> None:
         self.validar_veiculo(v)
@@ -118,9 +109,7 @@ class Frota:
     # Lambda (desconto/taxa)
     # -------------------------
     def _aplicar_percent_indices(self, percent: float, indices: List[int], fator_fn) -> None:
-        """
-        fator_fn: lambda percent -> multiplicador (ex: 1 - p/100)
-        """
+    
         fator = float(fator_fn(percent))
         for idx in indices:
             if 0 <= idx < len(self.veiculos):
@@ -133,7 +122,7 @@ class Frota:
     def aplicar_taxa_percent_indices(self, percent: float, indices: List[int]) -> None:
         self._aplicar_percent_indices(percent, indices, lambda p: 1.0 + (p / 100.0))
 
-    # (mantém também as versões “a todos”, se quiseres usar)
+    
     def aplicar_desconto_percent(self, percent: float) -> None:
         self._aplicar_percent_indices(percent, list(range(len(self.veiculos))), lambda p: 1.0 - (p / 100.0))
 
@@ -141,7 +130,7 @@ class Frota:
         self._aplicar_percent_indices(percent, list(range(len(self.veiculos))), lambda p: 1.0 + (p / 100.0))
 
     # -------------------------
-    # Export (enunciado)
+    # Export
     # -------------------------
     def exportar_txt(self, path: str) -> None:
         try:

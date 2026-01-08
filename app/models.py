@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 
-
 @dataclass
 class Veiculo:
     marca: str
@@ -20,7 +19,6 @@ class Veiculo:
 class CarroEletrico(Veiculo):
     bateria_kwh: float = 0.0
 
-    # ✅ exemplo de lambda (curta e clara)
     autonomia_km = lambda self: self.bateria_kwh * 5.0
 
     def __str__(self) -> str:
