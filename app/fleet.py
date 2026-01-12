@@ -14,7 +14,7 @@ def _safe_float(value: str, default: float = 0.0) -> float:
 
 
 class Frota:
-    HEADER = ["tipo", "marca", "modelo", "ano", "preco", "bateria_kwh"]
+    HEADER = ["tipo", "criado_em", "marca", "modelo", "ano", "preco", "bateria_kwh"]
 
     def __init__(self, autosave_path: str = "data/frota_autosave.csv"):
         self.veiculos: List[Veiculo] = []
@@ -37,17 +37,21 @@ class Frota:
                         (r.get("modelo") or "").strip(),
                         int((r.get("ano") or "0").strip() or 0),
                         _safe_float((r.get("preco") or "0").strip(), 0.0),
-                        _safe_float((r.get("bateria_kwh") or "0").strip(), 0.0),
+                        criado_em=(r.get("criado_em") or "").strip() or "",
+                        bateria_kwh=_safe_float((r.get("bateria_kwh") or "0").strip(), 0.0),
                     )
-                    if (r.get("tipo") or "").strip() == "CarroEletrico"
-                    else Veiculo(
-                        (r.get("marca") or "").strip(),
-                        (r.get("modelo") or "").strip(),
-                        int((r.get("ano") or "0").strip() or 0),
-                        _safe_float((r.get("preco") or "0").strip(), 0.0),
-                    )
-                    for r in reader
-                ]
+
+                if (r.get("tipo") or "").strip() == "CarroEletrico"
+                else Veiculo(
+                    (r.get("marca") or "").strip(),
+                    (r.get("modelo") or "").strip(),
+                    int((r.get("ano") or "0").strip() or 0),
+                    _safe_float((r.get("preco") or "0").strip(), 0.0),
+                    criado_em=(r.get("criado_em") or "").strip() or ""
+                )
+                for r in reader
+            ]
+
         except Exception:
             self.veiculos = []
 
@@ -82,18 +86,20 @@ class Frota:
 
     
     @log_operacao
-    def adicionar_veiculo(self, v: Veiculo) -> None:
+    def adicionar_veiculo(self, v):
         self.validar_veiculo(v)
         self.veiculos.append(v)
         self.guardar_autosave()
 
+
     @log_operacao
-    def remover_por_indice(self, idx: int) -> bool:
+    def remover_por_indice(self, idx):
         if 0 <= idx < len(self.veiculos):
             self.veiculos.pop(idx)
             self.guardar_autosave()
             return True
         return False
+
 
     def obter(self, idx: int) -> Optional[Veiculo]:
         return self.veiculos[idx] if 0 <= idx < len(self.veiculos) else None

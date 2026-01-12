@@ -7,9 +7,9 @@ def log_operacao(func):
     def wrapper(*args, **kwargs):
         agora = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
         print(f"[{agora}] A executar: {func.__name__}")
-        try:
-            return func(*args, **kwargs)
-        except Exception as e:
-            print(f"[ERRO] {func.__name__}: {e}")
-            raise
+
+        resultado = func(*args, **kwargs)
+
+        return resultado
+
     return wrapper

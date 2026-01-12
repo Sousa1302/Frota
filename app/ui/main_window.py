@@ -74,9 +74,25 @@ class MainWindow(QMainWindow):
         layout.addLayout(bar2)
 
         # Tabela
-        self.table = QTableWidget(0, 7)
-        self.table.setHorizontalHeaderLabels(["Id", "Tipo", "Marca", "Modelo", "Ano", "Preço (€)", "Bateria (kWh)"])
-        self.table.horizontalHeader().setStretchLastSection(True)
+        self.table = QTableWidget(0, 8)
+        header = self.table.horizontalHeader()
+
+
+        self.table.setColumnWidth(0, 60)
+
+
+        self.table.setColumnWidth(1, 220)
+
+
+        self.table.setColumnWidth(7, 120)
+
+        # Restantes colunas adaptáveis
+        for col in range(2, 7):
+            header.setSectionResizeMode(col, header.ResizeMode.Stretch)
+
+
+        self.table.setHorizontalHeaderLabels(["ID", "Adicionado em", "Tipo", "Marca", "Modelo", "Ano", "Preço (€)", "Bateria (kWh)"])
+        #self.table.horizontalHeader().setStretchLastSection(True)
         self.table.setSelectionBehavior(self.table.SelectionBehavior.SelectRows)
         self.table.setSelectionMode(self.table.SelectionMode.ExtendedSelection)
         self.table.setEditTriggers(self.table.EditTrigger.NoEditTriggers)
@@ -108,13 +124,14 @@ class MainWindow(QMainWindow):
         selected_rows = {idx.row() for idx in self.table.selectedIndexes()}
         out = []
         for r in selected_rows:
-            it = self.table.item(r, 0)
-            if it:
-                try:
-                    out.append(int(it.text()))
-                except ValueError:
-                    pass
+            it = self.table.item(r, 0)  # coluna "Adicionado em"
+            if it is None:
+                continue
+            real_idx = it.data(Qt.ItemDataRole.UserRole)
+            if isinstance(real_idx, int):
+                out.append(real_idx)
         return sorted(set(out))
+
 
     def _apply_percent(self, fn, percent: float):
         if not self.frota.veiculos:
@@ -140,22 +157,32 @@ class MainWindow(QMainWindow):
                 continue
 
             self.table.insertRow(row)
+
             tipo = "CarroEletrico" if isinstance(v, CarroEletrico) else "Veiculo"
             bateria = f"{v.bateria_kwh:.1f}" if isinstance(v, CarroEletrico) else ""
 
+
+            item_id = QTableWidgetItem(str(idx))
+            item_id.setData(Qt.ItemDataRole.UserRole, idx)
+
+
+            item_time = QTableWidgetItem(str(getattr(v, "criado_em", "")))
+
             items = [
-                QTableWidgetItem(str(idx)),
-                QTableWidgetItem(tipo),
-                QTableWidgetItem(v.marca),
-                QTableWidgetItem(v.modelo),
-                QTableWidgetItem(str(v.ano)),
-                QTableWidgetItem(f"{v.preco:.2f}"),
-                QTableWidgetItem(bateria),
+                item_id,                               # 0 ID
+                item_time,                             # 1 Adicionado em
+                QTableWidgetItem(tipo),                # 2 Tipo
+                QTableWidgetItem(v.marca),             # 3 Marca
+                QTableWidgetItem(v.modelo),            # 4 Modelo
+                QTableWidgetItem(str(v.ano)),          # 5 Ano
+                QTableWidgetItem(f"{v.preco:.2f}"),    # 6 Preço
+                QTableWidgetItem(bateria),             # 7 Bateria
             ]
 
             for col, it in enumerate(items):
                 it.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
                 self.table.setItem(row, col, it)
+
 
     def on_add(self):
         dlg = AddVehicleDialog(self)
@@ -164,10 +191,17 @@ class MainWindow(QMainWindow):
 
         d = dlg.data
         v = (
-            CarroEletrico(d["marca"], d["modelo"], d["ano"], d["preco"], d["bateria_kwh"])
+            CarroEletrico(
+                d["marca"],
+                d["modelo"],
+                d["ano"],
+                d["preco"],
+                bateria_kwh=d["bateria_kwh"]  
+            )
             if d["tipo"] == "CarroEletrico"
             else Veiculo(d["marca"], d["modelo"], d["ano"], d["preco"])
         )
+
 
         try:
             self.frota.adicionar_veiculo(v)
