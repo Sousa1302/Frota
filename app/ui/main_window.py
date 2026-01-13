@@ -77,13 +77,8 @@ class MainWindow(QMainWindow):
         self.table = QTableWidget(0, 8)
         header = self.table.horizontalHeader()
 
-
         self.table.setColumnWidth(0, 60)
-
-
         self.table.setColumnWidth(1, 220)
-
-
         self.table.setColumnWidth(7, 120)
 
         # Restantes colunas adaptáveis
@@ -92,7 +87,6 @@ class MainWindow(QMainWindow):
 
 
         self.table.setHorizontalHeaderLabels(["ID", "Adicionado em", "Tipo", "Marca", "Modelo", "Ano", "Preço (€)", "Bateria (kWh)"])
-        #self.table.horizontalHeader().setStretchLastSection(True)
         self.table.setSelectionBehavior(self.table.SelectionBehavior.SelectRows)
         self.table.setSelectionMode(self.table.SelectionMode.ExtendedSelection)
         self.table.setEditTriggers(self.table.EditTrigger.NoEditTriggers)
@@ -111,9 +105,8 @@ class MainWindow(QMainWindow):
         self.filtered_indices = None
         self.refresh_table()
 
-    # -------------------------
+
     # Helpers
-    # -------------------------
     def _info(self, msg: str):
         QMessageBox.information(self, "Info", msg)
 
@@ -124,7 +117,7 @@ class MainWindow(QMainWindow):
         selected_rows = {idx.row() for idx in self.table.selectedIndexes()}
         out = []
         for r in selected_rows:
-            it = self.table.item(r, 0)  # coluna "Adicionado em"
+            it = self.table.item(r, 0)  
             if it is None:
                 continue
             real_idx = it.data(Qt.ItemDataRole.UserRole)
@@ -144,9 +137,8 @@ class MainWindow(QMainWindow):
         fn(float(percent), indices)
         self.refresh_table()
 
-    # -------------------------
+    
     # UI actions
-    # -------------------------
     def refresh_table(self):
         indices = list(range(len(self.frota.veiculos))) if self.filtered_indices is None else self.filtered_indices
         self.table.setRowCount(0)
@@ -161,11 +153,8 @@ class MainWindow(QMainWindow):
             tipo = "CarroEletrico" if isinstance(v, CarroEletrico) else "Veiculo"
             bateria = f"{v.bateria_kwh:.1f}" if isinstance(v, CarroEletrico) else ""
 
-
             item_id = QTableWidgetItem(str(idx))
             item_id.setData(Qt.ItemDataRole.UserRole, idx)
-
-
             item_time = QTableWidgetItem(str(getattr(v, "criado_em", "")))
 
             items = [

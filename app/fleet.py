@@ -21,9 +21,8 @@ class Frota:
         self.autosave_path = Path(autosave_path)
         self.autosave_path.parent.mkdir(parents=True, exist_ok=True)
 
-    # -------------------------
+  
     # Persistência automática
-    # -------------------------
     def carregar_autosave(self) -> None:
         if not self.autosave_path.exists():
             return
@@ -64,9 +63,8 @@ class Frota:
         except Exception:
             pass
 
-    # -----------
+    
     # Validações 
-    # -----------
     def validar_veiculo(self, v: Veiculo) -> None:
         if not v.marca or not v.marca.strip():
             raise ValueError("Marca vazia.")
@@ -104,16 +102,14 @@ class Frota:
     def obter(self, idx: int) -> Optional[Veiculo]:
         return self.veiculos[idx] if 0 <= idx < len(self.veiculos) else None
 
-    # -------------------------
+    
     # Pesquisa (list comprehension)
-    # -------------------------
     def pesquisar_por_marca(self, marca: str) -> List[Veiculo]:
         m = marca.lower().strip()
         return [v for v in self.veiculos if v.marca.lower() == m]
 
-    # -------------------------
+
     # Lambda (desconto/taxa)
-    # -------------------------
     def _aplicar_percent_indices(self, percent: float, indices: List[int], fator_fn) -> None:
     
         fator = float(fator_fn(percent))
@@ -135,9 +131,8 @@ class Frota:
     def aplicar_taxa_percent(self, percent: float) -> None:
         self._aplicar_percent_indices(percent, list(range(len(self.veiculos))), lambda p: 1.0 + (p / 100.0))
 
-    # -------------------------
+   
     # Export
-    # -------------------------
     def exportar_txt(self, path: str) -> None:
         try:
             with open(path, "w", encoding="utf-8") as f:

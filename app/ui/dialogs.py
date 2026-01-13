@@ -116,7 +116,7 @@ class AddVehicleDialog(QDialog):
             if abs(bateria) < 1e-9:
                 bateria = 0.0
 
-            # bloquear “-0” escrito (opcional, mas resolve o teu caso)
+            # bloquear “-0” escrito 
             if tipo == "CarroEletrico":
                 txt = self.spn_bat.lineEdit().text().strip()
                 if txt.startswith("-"):
