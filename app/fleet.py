@@ -72,8 +72,8 @@ class Frota:
             raise ValueError("Modelo vazio.")
         if v.preco < 0:
             raise ValueError("Preço não pode ser negativo.")
-        if not (1886 <= v.ano <= 2100):
-            raise ValueError("Ano inválido (1886–2100).")
+        if not (1886 <= v.ano <= 2026):
+            raise ValueError("Ano inválido (1886–2026).")
 
 
         if hasattr(v, "bateria_kwh"):

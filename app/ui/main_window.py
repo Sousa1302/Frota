@@ -116,8 +116,8 @@ class MainWindow(QMainWindow):
     def _selected_real_indices(self):
         selected_rows = {idx.row() for idx in self.table.selectedIndexes()}
         out = []
-        for r in selected_rows:
-            it = self.table.item(r, 0)  
+        for line in selected_rows:
+            it = self.table.item(line, 0)  
             if it is None:
                 continue
             real_idx = it.data(Qt.ItemDataRole.UserRole)
@@ -126,7 +126,7 @@ class MainWindow(QMainWindow):
         return sorted(set(out))
 
 
-    def _apply_percent(self, fn, percent: float):
+    def _apply_percent(self, function, percent: float):
         if not self.frota.veiculos:
             self._info("Inventário vazio.")
             return
@@ -134,7 +134,7 @@ class MainWindow(QMainWindow):
         if not indices:
             self._info("Seleciona pelo menos um veículo na tabela.")
             return
-        fn(float(percent), indices)
+        function(float(percent), indices)  # callback of another function  
         self.refresh_table()
 
     

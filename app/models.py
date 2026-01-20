@@ -31,8 +31,6 @@ class Veiculo:
 class CarroEletrico(Veiculo):
     bateria_kwh: float = 0.0
 
-    autonomia_km = lambda self: self.bateria_kwh * 5.0
-
     def __str__(self) -> str:
         return (
             f"CarroEletrico | {self.marca} {self.modelo} ({self.ano}) | {self.preco:.2f}€ | "

@@ -47,7 +47,7 @@ class AddVehicleDialog(QDialog):
         row_ano = QHBoxLayout()
         row_ano.addWidget(QLabel("Ano:"))
         self.spn_ano = QSpinBox()
-        self.spn_ano.setRange(1886, 2100)
+        self.spn_ano.setRange(1886, 2026)
         self.spn_ano.setValue(2015)
         row_ano.addWidget(self.spn_ano)
         layout.addLayout(row_ano)
